@@ -11,8 +11,8 @@
 using namespace std;
 using namespace cv;
 
-Mat img, img_save, roi;
-int mx1, mx2, my1, my2;
+Mat img, img_save;
+Point pt;
 
 int rgb[3] = { 0,0,0 };
 
@@ -115,7 +115,8 @@ void chg_brightness(int pos, void* userdata) {
 
 //트랙바 RGB
 void chg_RGB(int, void* userdata) {
-	Mat* img_ptr = &img;
+	//Mat* img_ptr = &img;
+	Mat* img_ptr = (Mat*)userdata;
 	Mat dstImage = img.clone();
 
 	//픽셀을 탐색
@@ -140,23 +141,25 @@ void chg_RGB(int, void* userdata) {
 
 void onMouse(int event, int x, int y, int flags, void* param) {
 
-	
-	bool cropping = false;
+	switch (event) {
+		case EVENT_LBUTTONDOWN:
+			pt = Point(x, y);
+			break;
+		case EVENT_LBUTTONUP:
+			
+			break;
+		case EVENT_MOUSEMOVE:
+			if (flags & EVENT_FLAG_LBUTTON) {
+				line(img, pt, Point(x, y), Scalar(0, 0, 0), 2);
+				imshow("image", img);
+				pt = Point(x, y);
 
-	if (event == EVENT_LBUTTONDOWN) {
-		mx1 = x;
-		my1 = y;
+				img_save = img.clone();
+			}
+			break;
+		default:
+			break;
+		}
 
-		cropping = true;
-	}
-	else if (event == EVENT_LBUTTONDOWN) {
-		mx2 = x;
-		my2 = y;
-
-		cropping = false;
-		rectangle(img, Rect(mx1, my1, mx2-mx1, my2-my1),Scalar(0,0,0),2);
-
-		imshow("image", img);
-	}
 }
 
